@@ -1,0 +1,47 @@
+name: Minecraft Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  host:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Unpack custom zip
+        run: 'chmod +x * && ./unpack-custom-zip.sh'
+      - name: Download artifact
+        if: failure()
+        uses: dawidd6/action-download-artifact@v2
+        with:
+              github_token: ${{secrets.GITHUB_TOKEN}}
+              workflow: server.yml
+              path: ./
+              workflow_conclusion: completed
+      - name: Update server
+        if: success() || failure()
+        run: ./setup-auto-mc.sh
+      - name: Setup ngrok
+        if: success() || failure()
+        env:
+          ngrokauthtoken: ${{ secrets.NGROKAUTHTOKEN }}
+        run: ./setup-ngrok.sh &
+      - name: Run server
+        if: success() || failure()
+        run: ./run-mc.sh
+      - name: Upload artifact
+        if: ${{ cancelled() }} || success() || failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: server
+          path: |
+                server
+                !*ngrok*
+                !server/logs
+                !server/*mixin*
+                !server/*fabric*
+                !server/*server*.jar
+                !server/*forge*
+                !server/cache
+                !server/libraries
