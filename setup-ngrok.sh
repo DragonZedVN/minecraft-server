@@ -3,4 +3,4 @@ unzip ngrok-stable-linux-amd64.zip
 chmod +x ngrok
 ./ngrok authtoken $ngrokauthtoken
 ./ngrok tcp 25565
-curl -s localhost:4040/api/tunnels | jq -r .tunnels[0].public_url
+printf curl -s localhost:4040/api/tunnels | jq -r .tunnels[0].public_url
