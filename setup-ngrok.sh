@@ -3,3 +3,4 @@ unzip ngrok-stable-linux-amd64.zip
 chmod +x ngrok
 ./ngrok authtoken $ngrokauthtoken
 ./ngrok tcp --region ap 25565
+echo "6969420"
